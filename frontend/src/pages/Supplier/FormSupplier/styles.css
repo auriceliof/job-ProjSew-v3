@@ -1,0 +1,87 @@
+.proj-supplier-card {
+  background-color: #fff;
+  border-radius: 10px;
+  height: 500px;
+}
+
+.proj-supplier-id {
+  display: flex;
+  align-items: center;
+  margin-top: -35px;
+}
+
+.proj-supplier-id input {
+  border: none;
+  padding: 5px;
+  font-size: 13px;
+  color: var(--proj-color-font-secondary);
+}
+
+#proj-supplier-form-section {
+  padding: 20px 0;
+}
+
+.proj-supplier-form-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.proj-supplier-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.proj-supplier-form h2 {
+  font-size: 20px;
+  font-weight: bolder;
+  color: var(--proj-color-font-quinternary);
+  font-weight: bold;
+  text-align: center;
+}
+
+.proj-supplier-form h5 {
+  color: var(--proj-color-font-primary);
+  margin-left: 10px;
+}
+
+.proj-supplier-form-controls-container {
+  width: 100%;
+  display: grid;
+  grid-gap: 20px;
+  margin: 10px 0;
+  padding: 0 22px;
+}
+
+.proj-supplier-form-control {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+  padding: 0 20px;
+  color: var(--proj-color-font-primary);
+  border-radius: 4px;
+  border: 1px solid var(--proj-color-card-border);
+}
+
+.proj-supplier-form-control:focus {
+  outline: none;
+}
+
+.proj-supplier-form-control::placeholder {
+  color: var(--proj-color-font-placeholder);
+}
+
+.proj-supplier-form-error {
+  color: var(--proj-color-error);
+  font-size: 12px;
+  padding-left: 4px;
+}
+
+.proj-supplier-form-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 25px;
+}

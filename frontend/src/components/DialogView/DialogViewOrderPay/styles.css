@@ -1,0 +1,73 @@
+.proj-dialog-order-pay-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.proj-dialog-order-pay-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0 30px 40px 30px;;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.25s ease;
+}
+
+.proj-dialog-order-pay-box h2 {
+  width: -moz-available;
+  font-size: 20px;
+  margin: 30px 0 0 0;
+  padding-bottom: 25px;
+  text-align: center;
+  color: var(--proj-color-font-quinternary);
+  border-bottom: 1px solid #ddd;
+}
+
+.proj-dialog-order-pay-content {
+  display: flow-root;  
+  font-size: 15px;
+  color: var(--proj-color-font-primary);
+  width: -moz-available;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
+.proj-dialog-order-pay-content h4 {
+  color: var(--proj-color-font-secondary);
+  margin-top: 5px;
+}
+
+.proj-dialog-order-pay-content p {
+  margin: 8px 0 0 16px;
+  padding: 0;
+  list-style-type: disc;
+  color: var(--proj-color-font-primary);
+}
+
+.proj-dialog-order-pay-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.proj-dialog-order-pay-actions button {
+  padding: 8px 16px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.5s;
+}
+
+.proj-dialog-order-pay-actions button:hover {
+  background: #0056b3;
+}

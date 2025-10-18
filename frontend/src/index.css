@@ -1,0 +1,152 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
+
+:root {
+  --proj-color-bg-primary: #e8e8e8;
+  --proj-color-bg-secondary: #074307;
+  --proj-color-bg-tertiary: #cac7c7;
+  --proj-color-bg-quaternary:#5793f2;
+  --proj-color-bg-quinternary:  #b8c6b9;
+
+  --proj-color-card-bg: #fff;
+  --proj-color-card-border: #d9d9d9;
+
+  --proj-color-btn-primary: #689468;
+  --proj-color-btn-secondary: rgb(204, 113, 113);
+
+  --proj-color-table-primary: #c3dbc3;
+  --proj-color-table-secondary: #fff;
+  --proj-color-table-tertiary: #e8e8e8;
+  --proj-color-table-quaternary: #e9cda4;
+
+  --proj-color-table-border: #fff;
+  
+  --proj-color-font-primary: #636363;
+  --proj-color-font-secondary: #3483fa;
+  --proj-color-font-tertiary: #fff;
+  --proj-color-font-quaternary: #000;
+  --proj-color-font-quinternary: #074307;
+  
+  --proj-color-font-placeholder: #d9d9d9;
+
+  --proj-color-error: #f33;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans";
+}
+
+a,
+a:hover {
+  text-decoration: none;
+  color: unset;
+}
+
+html,
+body {
+  background-color: var(--proj-color-bg-primary);
+}
+
+main {
+  padding: 0 20px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*-----------------------------------------------------------------*/
+/* generic styles */
+
+.proj-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.proj-card {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.proj-mb20 {
+  margin-bottom: 20px;
+}
+
+.proj-mb40 {
+  margin-bottom: 40px;
+}
+
+.proj-mt20 {
+  margin-top: 20px;
+}
+
+.proj-mt40 {
+  margin-top: 40px;
+}
+
+.proj-section-title {
+  text-align: center;
+  color: var(--proj-color-font-primary);
+  font-size: 16px;
+}
+
+.proj-txt-left {
+  text-align: left;
+}
+
+@media (min-width: 576px) {
+  .proj-section-title {
+    text-align: left;
+    font-size: 24px;
+  }
+}
+
+
+/*-----------------------------------------------------------------*/
+/* modal styles */
+
+.proj-dialog-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.proj-dialog-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background-color: var(--proj-color-card-bg);
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.proj-dialog-box h2 {
+  font-size: 20px;
+  color: var(--proj-color-font-primary);
+  margin-bottom: 20px;
+}
+
+.proj-dialog-btn-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.proj-dialog-btn {
+  width: 100%;
+  display: contents;
+}

@@ -1,0 +1,24 @@
+.proj-order-step-confirmation-container h2 {
+  font-size: 20px;
+  font-weight: bolder;
+  color: var(--proj-color-font-quaternary);
+  font-weight: bold;
+  text-align: center;
+}
+
+.proj-order-step-confirmation-controls-container h5 {
+  color: var(--proj-color-font-secondary);
+  font-size: 1rem;
+  margin: 0px 0 15px 10px;
+}
+
+.proj-order-step-confirmation-controls-container h6 {
+  color: var(--proj-color-font-primary);
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+
+.proj-order-step-confirmation-controls-content {
+  display: flex;
+  align-items: baseline;
+}

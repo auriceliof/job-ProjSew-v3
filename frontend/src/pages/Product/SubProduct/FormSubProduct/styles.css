@@ -1,0 +1,96 @@
+.proj-subproduct-card {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.proj-subproduct-id {
+  display: flex;
+  align-items: center;
+  margin-top: -35px;
+}
+
+.proj-subproduct-id input {
+  border: none;
+  padding: 5px;
+  font-size: 13px;
+  color: var(--proj-color-font-secondary);
+}
+
+#proj-subproduct-form-section {
+  padding: 20px 0;
+}
+
+.proj-subproduct-form-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.proj-subproduct-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.proj-subproduct-form h2 {
+  font-size: 20px;
+  font-weight: bolder;
+  color: var(--proj-color-font-quinternary);
+  font-weight: bold;
+  text-align: center;
+}
+
+.proj-subproduct-form h5 {
+  color: var(--proj-color-font-primary);
+  margin-left: 10px;
+}
+
+.proj-subproduct-form-controls-container {
+  width: 100%;
+  display: grid;
+  grid-gap: 20px;
+  margin: 10px 0;
+  padding: 0 22px;
+}
+
+.proj-subproduct-form-control {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+  padding: 0 20px;
+  color: var(--proj-color-font-primary);
+  border-radius: 4px;
+  border: 1px solid var(--proj-color-card-border);
+}
+
+.proj-subproduct-form-control:focus {
+  outline: none;
+}
+
+.proj-subproduct-form-control::placeholder {
+  color: var(--proj-color-font-placeholder);
+}
+
+.proj-subproduct-form-control__control {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+  padding: 0 10px;
+  color: var(--proj-color-font-primary);
+  border-radius: 4px;
+  border: 1px solid var(--proj-color-card-border);
+}
+
+.proj-subproduct-form-error {
+  color: var(--proj-color-error);
+  font-size: 12px;
+  padding-left: 4px;
+}
+
+.proj-subproduct-form-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 25px;
+}

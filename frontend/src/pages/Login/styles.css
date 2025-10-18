@@ -1,0 +1,178 @@
+/* Reset básico para garantir altura total */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container principal ocupa a tela toda */
+.login-main {
+  position: relative;
+  width: 100%;
+  height: 92vh; /* Tela inteira */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Pseudo-elemento com imagem e blur aplicado */
+.login-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../../assets/background.jpg"); /* Ajuste o caminho */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(8px); /* Aplica o desfoque */
+  transform: scale(1.1); /* Evita bordas visíveis após blur */
+  z-index: 0;
+}
+
+/* Overlay escuro por cima do blur */
+.login-main .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Remove comportamento estranho da section */
+.proj-login-form-section {
+  margin: 0;
+  padding: 0;
+  width: auto;
+  z-index: 2;
+}
+
+.proj-login-card {
+  position: relative;
+  z-index: 2;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+  /* Animação */
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.proj-login-card:hover {
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+.proj-login-form-control {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.proj-login-form img {
+  display: block;
+  margin: 0 auto 15px auto;
+  height: 50px;
+  width: 50px;
+}
+
+.proj-login-form h1 {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--proj-color-font-secondary);  
+}
+
+.proj-login-form h2 {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--proj-color-font-primary);
+  display: none;
+}
+
+.proj-login-form-buttons button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.4s ease;
+}
+
+.proj-login-form-buttons button:hover {
+  background-color: #0056b3;
+}
+
+/* Animação do card */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ======================
+   RESPONSIVIDADE
+====================== */
+
+@media screen and (min-width: 600px) {
+
+  .proj-login-form h1 {
+    font-size: 1.2rem;
+  }
+
+  .proj-login-form h2 {
+    display: flex;
+  }
+
+  .proj-login-card {
+    width: 380px;
+  }
+
+  .proj-login-form img {
+    height: 70px;
+    width: 70px;
+  }
+
+}
+
+@media screen and (min-width: 1024px) {
+
+  .proj-login-card {
+    width: 450px;
+  }
+
+  .proj-login-form img {
+    height: 100px;
+    width: 100px;
+  }
+
+  .proj-login-form h1 {
+    font-size: 1.4rem;
+  }
+  
+  .proj-login-form h2 {
+    font-size: 1.2rem;
+  }
+
+}

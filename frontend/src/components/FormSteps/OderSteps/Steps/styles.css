@@ -1,0 +1,45 @@
+.proj-steps-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    max-width: 550px;
+    margin: -160px auto;
+    position: relative;
+    margin-bottom: 0.4rem;
+}
+
+.proj-steps-container::after {
+    content: "";
+    width: 530px;
+    border-bottom: 1px solid #ccc;
+    position: absolute;
+    top: 25px;
+}
+
+.proj-steps-contents {
+    text-align: center;    
+    z-index: 1;    
+    padding: 0.5rem;    
+    border: none;
+    margin-bottom: 50px;
+}
+
+.proj-steps-contents p {
+    font-size: 12px;
+}
+
+.proj-steps-contents svg{
+    background-color:var(--proj-color-bg-primary);
+    width: 120px;
+    font-size: 1.6rem;
+    margin-bottom: .2rem;
+}
+
+.active {
+    font-weight: bold;
+}
+
+.active > svg {
+    fill: #7076f4;
+}

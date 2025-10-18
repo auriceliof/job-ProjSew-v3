@@ -1,0 +1,66 @@
+.proj-subproduct-listing-card {
+    background: #00ffff1e;
+    border-radius: 10px;
+    width: 1100px;
+    margin: auto;
+  }
+
+.proj-subproduct-listing-title h2{
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+    font-size: 2rem;
+}  
+
+.proj-subproduct-listing-btn {
+    display: flex;
+    cursor: pointer;
+    font-size: 10px;
+}  
+
+.proj-subproduct-listing-btn-primary {
+    margin-right: 20px;
+}
+  
+.proj-subproduct-listing-table {
+    width: 100%;
+    background-color: var(--proj-color-table-primary);
+    border-spacing: 0;
+    border: 1px solid var(--proj-color-table-border);
+    border-radius: 15px 15px 0 0; 
+}
+
+.proj-subproduct-listing-table-id {
+    text-align: center;
+}
+
+.proj-subproduct-listing-table thead {
+    height: 55px;
+    font-size: 14px;
+    color: var(--proj-color-font-quaternary);
+}
+
+.proj-subproduct-listing-table tbody {
+    text-align: center;
+    font-size: 12px;
+    color: var(--proj-color-font-primary);
+    background-color: var(--proj-color-card-bg);
+}
+
+.proj-subproduct-listing-table tbody tr {
+    height: 50px;
+    border-top: 1px solid var(--proj-color-card-border);
+}
+
+.proj-subproduct-listing-table tbody img {
+    height: 20px;
+    cursor: pointer;
+}
+
+.proj-subproduct-listing-table tr:nth-of-type(even) {
+    background-color: var(--proj-color-table-tertiary);
+}
+
+.proj-subproduct-listing-pagination {
+    margin: 30px 30px;
+}

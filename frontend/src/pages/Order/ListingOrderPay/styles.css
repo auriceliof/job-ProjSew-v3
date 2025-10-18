@@ -1,0 +1,107 @@
+.proj-order-pay-card {
+    background: #ff00d71a;
+    border-radius: 10px;
+    width: 1100px;
+    margin: auto;
+  }
+
+.proj-order-pay-title h2{
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+    font-size: 2rem;
+}
+
+.proj-order-pay-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+}
+  
+.proj-order-pay-btn {
+    cursor: pointer;
+    margin: 5px;
+    width: 18%;
+    font-size: 10px;
+}  
+  
+.proj-order-pay-table {
+    width: 100%;
+    background-color: var(--proj-color-table-primary);
+    border-spacing: 0;
+    border: 1px solid var(--proj-color-table-border);
+    border-radius: 15px 15px 0 0; 
+    margin-top: 10px;
+}
+
+.proj-order-pay-table-id {
+    padding: 10px;
+}
+
+.proj-order-pay-table-totalamount {
+    color: orange;
+    font-weight: bold;
+}
+
+.proj-order-pay-table-paidvalue {
+    color: green;
+    font-weight: bold;
+}
+
+.proj-order-pay-table-amount-rest {
+    color: red;
+    font-weight: bold;
+}
+
+.proj-order-pay-table-status {
+    font-weight: bold;
+}
+
+.proj-order-pay-table-status.red {
+    background-color: rgba(255, 0, 0, 0.1);
+    font-weight: bold;
+}
+  
+.proj-order-pay-table-status.green {
+    background-color: rgb(0, 255, 0, 0.1);
+}
+  
+.proj-order-pay-table-status.yellow {
+    background-color: rgba(246, 255, 0, 0.3);
+}
+
+.proj-order-pay-table-status.gray {
+    background-color: rgba(74, 74, 72, 0.5);
+}
+
+.proj-order-pay-table thead {
+    height: 50px;
+    font-size: 10px;
+    color: var(--proj-color-font-quaternary);
+}
+
+.proj-order-pay-table tbody {
+    text-align: center;
+    font-size: 12px;
+    color: var(--proj-color-font-primary);
+    background-color: var(--proj-color-card-bg);
+}
+
+.proj-order-pay-table tbody tr {
+    height: 50px;
+    border-top: 1px solid var(--proj-color-card-border);
+}
+
+.proj-order-pay-table tbody img {
+    height: 30px;
+    cursor: pointer;
+    width: 50px;
+}
+
+.proj-order-pay-table tr:nth-of-type(even) {
+    background-color: var(--proj-color-table-tertiary);
+}
+
+.proj-order-pay-pagination {
+    margin: 50px 30px;
+}
