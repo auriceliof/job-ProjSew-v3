@@ -6,11 +6,12 @@ import supplierIcon from "../../assets/supplier.svg";
 import userIcon from "../../assets/user.svg";
 import orderIcon from "../../assets/order.svg";
 import payIcon from "../../assets/pay.svg";
+import statsIcon from "../../assets/stats.svg";
 import { useEffect, useState } from "react";
 import { UserDTO } from "../../models/userDto";
 import * as userService from "../../services/user-service";
 import { getAccessToken, logout } from "../../services/auth-service";
-import * as authService from '../../services/auth-service';
+import * as authService from "../../services/auth-service";
 
 export default function Header() {
   const location = useLocation();
@@ -24,12 +25,8 @@ export default function Header() {
     if (token) {
       userService
         .findMe()
-        .then((response) => {
-          setUser(response.data);
-        })
-        .catch(() => {
-          setUser(undefined);
-        });
+        .then((response) => setUser(response.data))
+        .catch(() => setUser(undefined));
     } else {
       setUser(undefined);
     }
@@ -37,7 +34,7 @@ export default function Header() {
 
   function handleLogout() {
     logout();
-    setUser(undefined); 
+    setUser(undefined);
     navigate("/login");
   }
 
@@ -51,7 +48,7 @@ export default function Header() {
                 <div>
                   <a href="https://github.com/auriceliof/job-ProjSew">ProjSew</a>
                 </div>
-            
+
                 <div>
                   <h5>Logado: {user.login}</h5>
                 </div>
@@ -70,6 +67,7 @@ export default function Header() {
                     className={location.pathname === "/" ? "active" : ""}
                   />
                 </Link>
+
                 <Link to="/listingProducts">
                   <img
                     src={productIcon}
@@ -78,6 +76,7 @@ export default function Header() {
                     className={location.pathname === "/listingProducts" ? "active" : ""}
                   />
                 </Link>
+
                 <Link to="/listingSuppliers">
                   <img
                     src={supplierIcon}
@@ -86,6 +85,7 @@ export default function Header() {
                     className={location.pathname === "/listingSuppliers" ? "active" : ""}
                   />
                 </Link>
+
                 <Link to="/listingOrders">
                   <img
                     src={orderIcon}
@@ -94,6 +94,7 @@ export default function Header() {
                     className={location.pathname === "/listingOrders" ? "active" : ""}
                   />
                 </Link>
+
                 <Link to="/listingOrdersPay">
                   <img
                     src={payIcon}
@@ -102,17 +103,28 @@ export default function Header() {
                     className={location.pathname === "/listingOrdersPay" ? "active" : ""}
                   />
                 </Link>
-                {
-                  authService.hasAnyRoles(['ROLE_ADMIN']) &&
-                  <Link to="/listingUsers">
-                    <img
-                      src={userIcon}
-                      alt="Usuario"
-                      title="Usuario"
-                      className={location.pathname === "/listingUsers" ? "active" : ""}
-                    />
-                  </Link>
-                }
+
+                {authService.hasAnyRoles(["ROLE_ADMIN"]) && (
+                  <div>
+                    <Link to="/listingUsers">
+                      <img
+                        src={userIcon}
+                        alt="Usuário"
+                        title="Usuário"
+                        className={location.pathname === "/listingUsers" ? "active" : ""}
+                      />
+                    </Link>
+
+                    <Link to="/stats">
+                      <img
+                        src={statsIcon}
+                        alt="Estatísticas"
+                        title="Estatísticas"
+                        className={location.pathname === "/stats" ? "active" : ""}
+                      />
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 

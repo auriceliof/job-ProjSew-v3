@@ -25,6 +25,7 @@ import FormPay from './pages/Order/Pay/FormPay';
 import { ToastContainer } from 'react-toastify';
 import ListingUser from './pages/User/ListingUser';
 import FormUser from './pages/User/FormUser';
+import StatsPage from './pages/Stats';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
             <Route path="listingPay/:payId" element={<FormPay />} />
             <Route path="listingUsers" element={<ListingUser />} />
             <Route path="listingUsers/:userId" element={<FormUser />} />
+            <Route path='stats' element={<StatsPage />} />
           </Route>
         </Routes>
       </HistoryRouter>
