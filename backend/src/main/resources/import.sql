@@ -32,7 +32,31 @@ INSERT INTO tb_order  (supplier_Id, product_Id, sub_Product_Id, status_Id, entry
 INSERT INTO tb_order  (supplier_Id, product_Id, sub_Product_Id, status_Id, entry_Date, unit_Amount_Prod, quantity_Prod, unit_Amount_Sub_Prod, quantity_Sub_Prod, exit_Date, total_Amount, paid_Value, is_Paid, end_Os) VALUES (1, 1, null, 4, '2024-05-28', 4.0, 100, null, null, '2024-05-10', 400.0, 400.0, true, '2024-05-30');
 INSERT INTO tb_order  (supplier_Id, product_Id, sub_Product_Id, status_Id, entry_Date, unit_Amount_Prod, quantity_Prod, unit_Amount_Sub_Prod, quantity_Sub_Prod, exit_Date, total_Amount, paid_Value, is_Paid, end_Os) VALUES (2, 4, null, 3, '2024-06-28', 40.0, 2, null, null, '2024-07-28', 80.0, 0, false, null);
 
+INSERT INTO tb_order_exit (order_id, exit_Date, quantity_Prod) VALUES (1, '2025-10-01', 10)
+INSERT INTO tb_order_exit (order_id, exit_Date, quantity_Prod) VALUES (1, '2025-10-20', 40)
+INSERT INTO tb_order_exit (order_id, exit_Date, quantity_Prod) VALUES (2, '2025-10-25', 40)
+
 INSERT INTO tb_pay  (order_Id, pay_Date, pay_Value) VALUES (4, '2024-05-30', 70.0);
 INSERT INTO tb_pay  (order_Id, pay_Date, pay_Value) VALUES (5, '2024-05-29', 200.0);
 INSERT INTO tb_pay  (order_Id, pay_Date, pay_Value) VALUES (5, '2024-05-30', 200.0);
 INSERT INTO tb_pay  (order_Id, pay_Date, pay_Value) VALUES (3, '2024-07-30', 70.0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

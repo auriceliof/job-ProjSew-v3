@@ -59,25 +59,28 @@ public class Order implements Serializable{
 		
 	}
 
-	public Order(Long id, LocalDate entryDate, Double unitAmountProd, Integer quantityProd, Double unitAmountSubProd, 
-			Integer quantitySubProd, LocalDate exitDate, Double totalAmount, Double paidValue, Boolean isPaid, 
-			LocalDate endOs, Supplier supplier, Product product, SubProduct subProduct, Status status) {
-	this.id = id;
-	this.entryDate = entryDate;
-	this.unitAmountProd = unitAmountProd;
-	this.quantityProd = quantityProd;
-	this.unitAmountProd = unitAmountSubProd;
-	this.quantityProd = quantitySubProd;
-	this.exitDate = exitDate;
-	this.totalAmount = totalAmount;
-	this.paidValue = paidValue != null ? paidValue : 0.0;
-	this.isPaid = isPaid != null ? isPaid : false;
-	this.endOs = endOs;
-	this.supplier = supplier;
-	this.product = product;
-	this.subProduct = subProduct;
-	this.status = status;
-	calculateTotalAmount();
+	public Order(Long id, LocalDate entryDate,
+            Double unitAmountProd, Integer quantityProd,
+            Double unitAmountSubProd, Integer quantitySubProd,
+            LocalDate exitDate, Double totalAmount, Double paidValue, Boolean isPaid,
+            LocalDate endOs, Supplier supplier, Product product, SubProduct subProduct, Status status) {
+
+	   this.id = id;
+	   this.entryDate = entryDate;
+	   this.unitAmountProd = unitAmountProd;
+	   this.quantityProd = quantityProd;
+	   this.unitAmountSubProd = unitAmountSubProd;
+	   this.quantitySubProd = quantitySubProd;
+	   this.exitDate = exitDate;
+	   this.totalAmount = totalAmount;
+	   this.paidValue = paidValue != null ? paidValue : 0.0;
+	   this.isPaid = isPaid != null ? isPaid : false;
+	   this.endOs = endOs;
+	   this.supplier = supplier;
+	   this.product = product;
+	   this.subProduct = subProduct;
+	   this.status = status;
+	   calculateTotalAmount();
 	}
 
 	public Long getId() {
