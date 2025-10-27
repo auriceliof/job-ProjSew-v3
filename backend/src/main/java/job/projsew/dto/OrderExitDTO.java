@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 import job.projsew.entities.Order;
 import job.projsew.entities.OrderExit;
 
@@ -14,6 +15,7 @@ public class OrderExitDTO {
 		@PastOrPresent(message = "A data não pode ser futura")
 	 	private LocalDate exitDate;
 		
+		@PositiveOrZero(message = "Quantidade de saída não pode ser negativa")
 	 	private Integer quantityProd;
 	 	
 	 	private Order order;
