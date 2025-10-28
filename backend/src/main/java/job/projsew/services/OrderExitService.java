@@ -1,8 +1,10 @@
 package job.projsew.services;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,19 +16,31 @@ import org.springframework.transaction.annotation.Transactional;
 import job.projsew.dto.OrderExitDTO;
 import job.projsew.entities.Order;
 import job.projsew.entities.OrderExit;
+import job.projsew.entities.Status;
 import job.projsew.repositories.OrderExitRepository;
 import job.projsew.repositories.OrderRepository;
+import job.projsew.repositories.StatusRepository;
 import job.projsew.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class OrderExitService {
-    
+
+    // Nomes tal como cadastrados em tb_status.name
+    private static final String STATUS_PRODUCAO   = "Produção";
+    private static final String STATUS_FINALIZADO = "Finalizado";
+
     @Autowired
     private OrderExitRepository exitRepository;
 
     @Autowired
     private OrderRepository orderRepository;
-    
+
+    @Autowired
+    private StatusRepository statusRepository;
+
+    // Cache simples por nome (lowercase) -> Status
+    private final Map<String, Status> statusCache = new ConcurrentHashMap<>();
+
     /* ====== READ ====== */
 
     @Transactional(readOnly = true)
@@ -62,13 +76,12 @@ public class OrderExitService {
         int alreadyExited = normalize(Optional.ofNullable(
                 exitRepository.sumQuantityByOrderId(order.getId()))
                 .orElse(0));
-        
-        // Validação unificada
+
         validateAvailabilityOrThrow(
             order.getQuantityProd(), // entrada
             alreadyExited,           // já saiu
             newQty,                  // nova saída
-            ""                       // sufixo do rótulo para CREATE
+            ""                       // sufixo para rótulo do CREATE
         );
 
         OrderExit entity = new OrderExit();
@@ -78,8 +91,8 @@ public class OrderExitService {
 
         entity = exitRepository.save(entity);
 
-        // Sincroniza Order.exitDate -> MAX(exitDate)
-        refreshOrderLatestExitDate(order.getId());
+        // Sincroniza agregados (exitDate + status)
+        refreshOrderAggregates(order.getId());
 
         return new OrderExitDTO(entity);
     }
@@ -109,12 +122,11 @@ public class OrderExitService {
                 exitRepository.sumQuantityByOrderIdExcludingExit(orderId, id))
                 .orElse(0));
 
-        // Validação unificada (com rótulo específico do UPDATE)
         validateAvailabilityOrThrow(
-            order.getQuantityProd(),   // entrada
-            outrasSaidas,              // já saiu (outras saídas)
-            newQty,                    // nova saída
-            " (outras saídas)"         // sufixo para UPDATE
+            order.getQuantityProd(), // entrada
+            outrasSaidas,            // já saiu (outras saídas)
+            newQty,                  // nova saída
+            " (outras saídas)"       // sufixo para rótulo do UPDATE
         );
 
         if (dto.getExitDate() != null) {
@@ -124,8 +136,8 @@ public class OrderExitService {
 
         entity = exitRepository.save(entity);
 
-        // Recalcula a última data após a alteração
-        refreshOrderLatestExitDate(orderId);
+        // Recalcula agregados após a alteração
+        refreshOrderAggregates(orderId);
 
         return new OrderExitDTO(entity);
     }
@@ -146,27 +158,35 @@ public class OrderExitService {
             throw new ResourceNotFoundException("ID not found: " + id);
         }
 
-        // Recalcula a maior data remanescente (ou null se não houver mais saídas)
-        refreshOrderLatestExitDate(orderId);
+        // Recalcula agregados (inclusive pode “desfinalizar”)
+        refreshOrderAggregates(orderId);
     }
 
-    /* ====== SYNC EXIT DATE ====== */
+    /* ====== SYNC AGGREGATES (exitDate + status) ====== */
 
     /**
-     * Busca MAX(exitDate) das saídas do pedido e grava em Order.exitDate (ou null se não houver).
+     * Recalcula e aplica:
+     *  - exitDate = MAX(exitDate) das saídas do pedido (ou null)
+     *  - status   = "Finalizado" se sum(saídas) == entrada; senão "Produção"
      * Usa lock pessimista no Order para evitar condição de corrida.
      */
     @Transactional
-    protected void refreshOrderLatestExitDate(Long orderId) {
+    protected void refreshOrderAggregates(Long orderId) {
         LocalDate latest = exitRepository.findLatestExitDate(orderId).orElse(null);
+        int totalSaidas = normalize(Optional.ofNullable(exitRepository.sumQuantityByOrderId(orderId)).orElse(0));
 
         Order order = orderRepository.findByIdForUpdate(orderId)
             .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + orderId));
 
+        // Atualiza exitDate (se mudou)
         if (!Objects.equals(order.getExitDate(), latest)) {
             order.setExitDate(latest);
-            orderRepository.save(order);
         }
+
+        // Atualiza status conforme total de saídas vs entrada
+        applyOrderStatus(order, totalSaidas);
+
+        orderRepository.save(order);
     }
 
     /* ====== HELPERS (reuso) ====== */
@@ -209,5 +229,40 @@ public class OrderExitService {
                 limitePermitido
             ));
         }
+    }
+
+    /**
+     * Define o status da Order com base no total de saídas:
+     * - Se totalSaidas == entrada → Status("Finalizado")
+     * - Caso contrário → Status("Produção")
+     *
+     * Usa cache em memória para evitar busca repetida no banco.
+     */
+    private void applyOrderStatus(Order order, int totalSaidas) {
+        Integer entradaBoxed = order.getQuantityProd();
+        int entrada = (entradaBoxed == null ? 0 : entradaBoxed);
+
+        final String nomeStatus = (totalSaidas == entrada) ? STATUS_FINALIZADO : STATUS_PRODUCAO;
+
+        Status novoStatus = getStatusByName(nomeStatus); // obtém do cache/banco
+
+        if (!Objects.equals(order.getStatus(), novoStatus)) {
+            order.setStatus(novoStatus);
+        }
+    }
+
+    /** Busca Status por nome (case-insensitive) com cache em memória */
+    private Status getStatusByName(String name) {
+        final String key = name.toLowerCase();
+        Status cached = statusCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
+        Status found = statusRepository.findByNameIgnoreCase(name)
+            .orElseThrow(() -> new ResourceNotFoundException("Status não encontrado: " + name));
+
+        statusCache.put(key, found);
+        return found;
     }
 }
