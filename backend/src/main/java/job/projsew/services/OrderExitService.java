@@ -49,6 +49,13 @@ public class OrderExitService {
         return list.map(OrderExitDTO::new);
     }
 
+    // 🔹 Novo método — busca saídas filtradas por orderId
+    @Transactional(readOnly = true)
+    public Page<OrderExitDTO> findByOrderId(Long orderId, Pageable pageable) {
+        Page<OrderExit> list = exitRepository.findAllByOrderId(orderId, pageable);
+        return list.map(OrderExitDTO::new);
+    }
+
     @Transactional(readOnly = true)
     public OrderExitDTO findById(Long id) {
         OrderExit entity = exitRepository.findById(id)
@@ -191,29 +198,21 @@ public class OrderExitService {
 
     /* ====== HELPERS (reuso) ====== */
 
-    /** Lock pessimista no Order para consistência em cenários concorrentes */
     private Order lockOrderForUpdate(Long orderId) {
         return orderRepository.findByIdForUpdate(orderId)
             .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + orderId));
     }
 
-    /** Normaliza Integer possivelmente nulo para int */
     private int normalize(Integer value) {
         return value == null ? 0 : value.intValue();
     }
 
-    /** Valida quantidade não negativa */
     private void validateNonNegative(int qty) {
         if (qty < 0) {
             throw new IllegalArgumentException("Quantidade de saída não pode ser negativa");
         }
     }
 
-    /**
-     * Regras:
-     * - Se (jaSaiu + novaSaida) > entrada -> lança IllegalArgumentException com mensagem padronizada
-     * - Limite permitido = entrada - jaSaiu (não inclui a nova, pois ela excedeu)
-     */
     private void validateAvailabilityOrThrow(int entrada, int jaSaiu, int novaSaida, String saiuLabelSuffix) {
         long proposedTotal = (long) jaSaiu + (long) novaSaida;
         if (proposedTotal > (long) entrada) {
@@ -231,13 +230,6 @@ public class OrderExitService {
         }
     }
 
-    /**
-     * Define o status da Order com base no total de saídas:
-     * - Se totalSaidas == entrada → Status("Finalizado")
-     * - Caso contrário → Status("Produção")
-     *
-     * Usa cache em memória para evitar busca repetida no banco.
-     */
     private void applyOrderStatus(Order order, int totalSaidas) {
         Integer entradaBoxed = order.getQuantityProd();
         int entrada = (entradaBoxed == null ? 0 : entradaBoxed);
@@ -251,7 +243,6 @@ public class OrderExitService {
         }
     }
 
-    /** Busca Status por nome (case-insensitive) com cache em memória */
     private Status getStatusByName(String name) {
         final String key = name.toLowerCase();
         Status cached = statusCache.get(key);

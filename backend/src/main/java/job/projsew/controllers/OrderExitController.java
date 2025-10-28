@@ -29,15 +29,24 @@ public class OrderExitController {
 	@Autowired
     private OrderExitService service;
 
-	@Operation(summary = "Busca todos as saídas", method = "GET")
+	@Operation(summary = "Busca saídas (com filtro opcional por orderId)", method = "GET")
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
 	@GetMapping
-	public	ResponseEntity<Page<OrderExitDTO>> findAll(Pageable pageable) {
-		
-		Page<OrderExitDTO> list = service.findAllPaged(pageable);
-			
-		return	ResponseEntity.ok().body(list);
-	}	
+	public ResponseEntity<Page<OrderExitDTO>> findAll(
+	        @org.springframework.web.bind.annotation.RequestParam(name = "orderId", required = false) Long orderId,
+	        Pageable pageable) {
+	    
+	    Page<OrderExitDTO> list;
+
+	    if (orderId != null) {
+	        list = service.findByOrderId(orderId, pageable);
+	    } else {
+	        list = service.findAllPaged(pageable);
+	    }
+
+	    return ResponseEntity.ok().body(list);
+	}
+
 	
 	@Operation(summary = "Busca as saídas por ID", method = "GET")
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
