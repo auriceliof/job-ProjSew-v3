@@ -37,8 +37,8 @@ public class OrderExitService {
 
     @Transactional(readOnly = true)
     public OrderExitDTO findById(Long id) {
-        Optional<OrderExit> obj = exitRepository.findById(id);
-        OrderExit entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        OrderExit entity = exitRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
         return new OrderExitDTO(entity);
     }
 
@@ -50,28 +50,26 @@ public class OrderExitService {
             throw new ResourceNotFoundException("Order is required");
         }
 
-        // Lock pessimista no pedido para consistência em concorrência
-        Order order = orderRepository.findByIdForUpdate(dto.getOrder().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        Order order = lockOrderForUpdate(dto.getOrder().getId());
 
         if (order.getQuantityProd() == null) {
             throw new IllegalArgumentException("Quantidade de entrada do pedido (quantityProd) não definida");
         }
 
-        Integer newQty = dto.getQuantityProd() == null ? 0 : dto.getQuantityProd();
-        if (newQty < 0) {
-            throw new IllegalArgumentException("Quantidade de saída não pode ser negativa");
-        }
+        int newQty = normalize(dto.getQuantityProd());
+        validateNonNegative(newQty);
 
-        int alreadyExited = exitRepository.sumQuantityByOrderId(order.getId());
-        long proposedTotal = (long) alreadyExited + (long) newQty;
-
-        if (proposedTotal > order.getQuantityProd()) {
-            throw new IllegalArgumentException(String.format(
-                "Quantidade de saída excede o total do pedido. Já saiu: %d, nova saída: %d, entrada: %d",
-                alreadyExited, newQty, order.getQuantityProd()
-            ));
-        }
+        int alreadyExited = normalize(Optional.ofNullable(
+                exitRepository.sumQuantityByOrderId(order.getId()))
+                .orElse(0));
+        
+        // Validação unificada
+        validateAvailabilityOrThrow(
+            order.getQuantityProd(), // entrada
+            alreadyExited,           // já saiu
+            newQty,                  // nova saída
+            ""                       // sufixo do rótulo para CREATE
+        );
 
         OrderExit entity = new OrderExit();
         entity.setOrder(order);
@@ -93,35 +91,31 @@ public class OrderExitService {
         OrderExit entity = exitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("OrderExit não encontrado: " + id));
 
-        // >>> Correção: extrair orderId para variável local (efetivamente final)
-        final Long orderId = entity.getOrder() != null ? entity.getOrder().getId() : null;
+        final Long orderId = (entity.getOrder() != null ? entity.getOrder().getId() : null);
         if (orderId == null) {
             throw new ResourceNotFoundException("Order não encontrado para a saída: " + id);
         }
 
-        // Lock no pedido vinculado usando orderId (evita capturar 'entity' no lambda)
-        Order order = orderRepository.findByIdForUpdate(orderId)
-            .orElseThrow(() -> new ResourceNotFoundException("Order não encontrado: " + orderId));
+        Order order = lockOrderForUpdate(orderId);
 
         if (order.getQuantityProd() == null) {
             throw new IllegalArgumentException("Quantidade de entrada do pedido (quantityProd) não definida");
         }
 
-        Integer newQty = dto.getQuantityProd() == null ? entity.getQuantityProd() : dto.getQuantityProd();
-        if (newQty == null) newQty = 0;
-        if (newQty < 0) {
-            throw new IllegalArgumentException("Quantidade de saída não pode ser negativa");
-        }
+        int newQty = normalize(dto.getQuantityProd() != null ? dto.getQuantityProd() : entity.getQuantityProd());
+        validateNonNegative(newQty);
 
-        int sumOthers = exitRepository.sumQuantityByOrderIdExcludingExit(orderId, id);
-        long proposedTotal = (long) sumOthers + (long) newQty;
+        int outrasSaidas = normalize(Optional.ofNullable(
+                exitRepository.sumQuantityByOrderIdExcludingExit(orderId, id))
+                .orElse(0));
 
-        if (proposedTotal > order.getQuantityProd()) {
-            throw new IllegalArgumentException(String.format(
-                "Quantidade de saída excede o total do pedido. Outras saídas: %d, nova quantidade: %d, entrada: %d",
-                sumOthers, newQty, order.getQuantityProd()
-            ));
-        }
+        // Validação unificada (com rótulo específico do UPDATE)
+        validateAvailabilityOrThrow(
+            order.getQuantityProd(),   // entrada
+            outrasSaidas,              // já saiu (outras saídas)
+            newQty,                    // nova saída
+            " (outras saídas)"         // sufixo para UPDATE
+        );
 
         if (dto.getExitDate() != null) {
             entity.setExitDate(dto.getExitDate());
@@ -138,6 +132,7 @@ public class OrderExitService {
 
     /* ====== DELETE ====== */
 
+    @Transactional
     public void delete(Long id) {
         // Para recalcular depois do delete, precisamos saber qual Order foi afetado
         Long orderId = exitRepository.findById(id)
@@ -171,6 +166,48 @@ public class OrderExitService {
         if (!Objects.equals(order.getExitDate(), latest)) {
             order.setExitDate(latest);
             orderRepository.save(order);
+        }
+    }
+
+    /* ====== HELPERS (reuso) ====== */
+
+    /** Lock pessimista no Order para consistência em cenários concorrentes */
+    private Order lockOrderForUpdate(Long orderId) {
+        return orderRepository.findByIdForUpdate(orderId)
+            .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + orderId));
+    }
+
+    /** Normaliza Integer possivelmente nulo para int */
+    private int normalize(Integer value) {
+        return value == null ? 0 : value.intValue();
+    }
+
+    /** Valida quantidade não negativa */
+    private void validateNonNegative(int qty) {
+        if (qty < 0) {
+            throw new IllegalArgumentException("Quantidade de saída não pode ser negativa");
+        }
+    }
+
+    /**
+     * Regras:
+     * - Se (jaSaiu + novaSaida) > entrada -> lança IllegalArgumentException com mensagem padronizada
+     * - Limite permitido = entrada - jaSaiu (não inclui a nova, pois ela excedeu)
+     */
+    private void validateAvailabilityOrThrow(int entrada, int jaSaiu, int novaSaida, String saiuLabelSuffix) {
+        long proposedTotal = (long) jaSaiu + (long) novaSaida;
+        if (proposedTotal > (long) entrada) {
+            int limitePermitido = entrada - jaSaiu;
+            throw new IllegalArgumentException(String.format(
+                "Operação inválida: a quantidade de saída excede o total do pedido. "
+                + "Entrada total: %d, já saiu%s: %d, nova saída recusada: %d. "
+                + "Limite permitido: %d unidade(s).",
+                entrada,
+                (saiuLabelSuffix == null ? "" : saiuLabelSuffix),
+                jaSaiu,
+                novaSaida,
+                limitePermitido
+            ));
         }
     }
 }

@@ -67,6 +67,18 @@ public class ResourceExceptionHandler {
 		
 		return ResponseEntity.status(status).body(err);
 	}
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<StandardError> illegalArgument(IllegalArgumentException e, HttpServletRequest request) {
+	    HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY; 
+	    StandardError err = new StandardError();
+	    err.setTimestamp(Instant.now());
+	    err.setStatus(status.value());
+	    err.setError("Illegal argument");
+	    err.setMessage(e.getMessage());
+	    err.setPath(request.getRequestURI());
+	    return ResponseEntity.status(status).body(err);
+	}
 }
 
 
