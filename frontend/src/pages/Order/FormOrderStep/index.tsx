@@ -9,10 +9,12 @@ import { FiSend } from "react-icons/fi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { OrderDTO } from "../../../models/orderDto";
+import { OrderExitDTO } from "../../../models/orderExitDto";
 import { Steps } from "../../../components/FormSteps/OderSteps/Steps";
 import { AiOutlineProduct, AiOutlineUser } from "react-icons/ai";
 import { FaIndent } from "react-icons/fa6";
 import * as orderService from "../../../services/order-service";
+import * as exitService from "../../../services/orderexit-service";
 
 type RouteParams = {
   orderId?: string;
@@ -35,35 +37,31 @@ function normalizeNumber(v: unknown): number | undefined {
   return typeof v === "number" && Number.isFinite(v) ? v : undefined;
 }
 
-// ✅ Modelo de formulário adaptado ao UI:
-// - Datas como string "YYYY-MM-DD" (combina com <input type="date">)
-// - Demais campos opcionais (preenchidos ao longo dos steps)
-type FormData = Partial<
-  Omit<OrderDTO, "entryDate" | "exitDate">
-> & {
+// ✅ Modelo de formulário adaptado ao UI
+type FormData = Partial<Omit<OrderDTO, "entryDate" | "exitDate">> & {
   entryDate?: string;
   exitDate?: string;
+  quantityExit?: number;
+  totalExited?: number;
+  exitError?: string | null;
 };
 
 export default function FormOrderStep() {
   const navigate = useNavigate();
   const { orderId } = useParams<RouteParams>();
 
-  // 🔧 Corrige detecção de modo
   const isCreate = !orderId || orderId === "create";
   const isEditing = !isCreate;
 
   const [id, setId] = useState<number | null>(null);
-
   const [data, setData] = useState<FormData>({
     status: { id: 1 } as any,
     subProduct: null as any,
   });
-
   const [errors, setErrors] = useState<any>({});
   const [currentStep, setCurrentStep] = useState(0);
 
-  // ✅ Função estrita + adaptador compatível com filhos (key: string, value: any)
+  // Atualiza estado geral
   const updateFildHandleStrict = useCallback(
     <K extends keyof FormData>(key: K, value: FormData[K]) => {
       setData((prev) => ({ ...prev, [key]: value }));
@@ -78,7 +76,7 @@ export default function FormOrderStep() {
     [updateFildHandleStrict]
   );
 
-  // Definição de passos com key estável para validar por semântica
+  // Passos
   const steps = useMemo(
     () => [
       {
@@ -124,7 +122,7 @@ export default function FormOrderStep() {
             orderId={id}
           />
         ),
-        enable: isEditing, // só aparece no modo edição
+        enable: isEditing,
       },
       {
         key: "confirm" as const,
@@ -142,7 +140,7 @@ export default function FormOrderStep() {
     [steps]
   );
 
-  // 🔧 Buscar dados apenas em edição, normalizando payload e datas
+  // Carrega dados da ordem ao editar
   useEffect(() => {
     if (!isEditing || !orderId) return;
 
@@ -152,11 +150,8 @@ export default function FormOrderStep() {
     orderService
       .findById(idNum)
       .then((response) => {
-        // aceita tanto { orderDto: {...}, id } quanto um objeto "flat" {...}
         const root = response.data ?? {};
         const fetchedData: any = root.orderDto ?? root;
-
-        // ID pode estar em root.id, fetchedData.id, ou cair no próprio idNum
         const resolvedId: number = root.id ?? fetchedData?.id ?? idNum;
         setId(resolvedId);
 
@@ -164,25 +159,19 @@ export default function FormOrderStep() {
           supplier: fetchedData?.supplier ?? null,
           product: fetchedData?.product ?? null,
           subProduct: fetchedData?.subProduct ?? null,
-
-          // ✅ datas como string "YYYY-MM-DD" (compatível com <input type="date">)
           entryDate: toYMD(fetchedData?.entryDate),
           exitDate: toYMD(fetchedData?.exitDate),
-
           unitAmountProd: normalizeNumber(fetchedData?.unitAmountProd),
           quantityProd: normalizeNumber(fetchedData?.quantityProd),
           unitAmountSubProd: normalizeNumber(fetchedData?.unitAmountSubProd),
           quantitySubProd: normalizeNumber(fetchedData?.quantitySubProd),
-
           status: fetchedData?.status ?? ({ id: 1 } as any),
         });
       })
-      .catch((e) => {
-        console.error("Falha ao carregar a ordem para edição:", e);
-      });
+      .catch((e) => console.error("Falha ao carregar a ordem:", e));
   }, [isEditing, orderId]);
 
-  // 🔧 Validação baseada no passo ativo por key (não por índice)
+  // ✅ Validação por step
   const validateStep = () => {
     const active = stepsFiltered[currentStep];
     let newErrors: any = {};
@@ -201,37 +190,27 @@ export default function FormOrderStep() {
           newErrors.unitAmountProd = "O valor deve ser maior que zero";
         if (!data.quantityProd || data.quantityProd <= 0)
           newErrors.quantityProd = "Quantidade deve ser maior que zero";
-
-        if (data.subProduct) {
-          if (!data.unitAmountSubProd || !data.quantitySubProd)
-            newErrors.subProduct =
-              "Favor definir o valor e um multiplicador para o subproduto";
-        }
-
-        if (data.unitAmountSubProd && !data.subProduct)
-          newErrors.unitAmountSubProd =
-            "Foi definido o valor do subproduto. Selecione um subproduto";
-
-        if (data.quantitySubProd && !data.subProduct)
-          newErrors.quantitySubProd =
-            "Foi definido um multiplicador para o subproduto. Selecione um subproduto";
         break;
 
       case "exit":
         if (!data.status) newErrors.status = "Status é obrigatório";
 
-        if (data.exitDate) {
-          const allowedStatuses = ["Finalizado", "Quitado"];
-          const statusNormalized = (data.status as any)?.name;
-          if (!allowedStatuses.includes(statusNormalized)) {
-            newErrors.exitDate = "Foi definida uma data de saída";
-            newErrors.status = "Favor alterar o status para 'Finalizado' ou 'Quitado'";
-          }
-        }
-        break;
+        const totalPedido = data.quantityProd ?? 0;
+        const totalSaidas = data.totalExited ?? 0;
+        const precisaFinalizar = totalSaidas >= totalPedido && totalPedido > 0;
 
-      case "confirm":
-        // sem validação extra
+        const allowedStatuses = ["Finalizado", "Quitado"];
+        const statusAtual = (data.status as any)?.name ?? "";
+
+        if (precisaFinalizar && !allowedStatuses.includes(statusAtual)) {
+          newErrors.status =
+            "Favor alterar o status para 'Finalizado' ou 'Quitado'";
+        }
+
+        // 🔹 Bloqueia avanço/salvar se houver erro de quantidade (vindo do ExitData)
+        if (data.exitError) {
+          newErrors.quantityExit = data.exitError;
+        }
         break;
     }
 
@@ -249,34 +228,43 @@ export default function FormOrderStep() {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
+  // 🔹 "Salvar" também grava a saída se existir e for válida
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-
     if (!validateStep()) return;
 
     const requestBody: any = { ...data };
-
-    // ✅ normalize datas antes de enviar (strings "YYYY-MM-DD")
     requestBody.entryDate = toYMD(data.entryDate) || "";
     requestBody.exitDate = toYMD(data.exitDate) || undefined;
-
-    // ✅ garanta que campos numéricos não sejam enviados como ""
     requestBody.unitAmountProd = normalizeNumber(data.unitAmountProd);
     requestBody.quantityProd = normalizeNumber(data.quantityProd);
     requestBody.unitAmountSubProd = normalizeNumber(data.unitAmountSubProd);
     requestBody.quantitySubProd = normalizeNumber(data.quantitySubProd);
 
-    if (isEditing && id != null) {
-      requestBody.id = id; // garante numérico
-    }
+    if (isEditing && id != null) requestBody.id = id;
 
     const request = isEditing
       ? orderService.updateRequest(requestBody)
       : orderService.insertRequest(requestBody);
 
-    request.then(() => {
-      navigate("/listingOrders");
-    });
+    request
+      .then((res) => {
+        const savedOrderId = res.data?.id ?? id;
+        const qtdSaida = Number(data.quantityExit ?? 0);
+        const dataSaida = data.exitDate ? new Date(data.exitDate) : null;
+
+        if (savedOrderId && qtdSaida > 0 && dataSaida) {
+          const novaSaida: OrderExitDTO = {
+            id: 0,
+            order: { id: savedOrderId } as any,
+            quantityProd: qtdSaida,
+            exitDate: dataSaida,
+          };
+          return exitService.insertRequest(novaSaida);
+        }
+      })
+      .then(() => navigate("/listingOrders"))
+      .catch((e) => console.error("Erro ao salvar ordem/saída:", e));
   }
 
   return (
@@ -303,7 +291,6 @@ export default function FormOrderStep() {
                   </div>
                 )}
 
-                {/* 🔧 Use a lista filtrada de passos para o componente de passos */}
                 <Steps currentStep={currentStep} steps={stepsFiltered} />
               </div>
 

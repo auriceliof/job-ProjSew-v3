@@ -2,15 +2,15 @@ import "./styles.css";
 import ReactSelect from "react-select";
 import { useEffect, useState } from "react";
 import { requestBackend } from "../../../../utils/requests";
-import * as orderService from "../../../../services/order-service";
 import { StatusDTO } from "../../../../models/statusDto";
+import { FaBoxOpen } from "react-icons/fa";
+import * as exitService from "../../../../services/orderexit-service";
+import { OrderExitDTO } from "../../../../models/orderExitDto";
 
 type Props = {
   data: any;
   updateFildHandle: (k: string, v: any) => void;
   errors: any;
-
-  // 🔧 novos props vindos do pai
   isEditing: boolean;
   orderId?: number | null;
 };
@@ -23,51 +23,82 @@ export default function ExitData({
   orderId,
 }: Props) {
   const [selectStatus, setSelectStatus] = useState<StatusDTO[]>([]);
+  const [totalSaidas, setTotalSaidas] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
 
-  // Carrega lista de status
+  // 🔹 Carrega lista de status
   useEffect(() => {
-    let ignore = false;
-
-    requestBackend({
-      url: "/status",
-      method: "GET",
-      withCredentials: true,
-    })
-      .then((response) => {
-        if (ignore) return;
-        setSelectStatus(response.data?.content ?? []);
-      })
-      .catch((e) => {
-        console.error("Falha ao carregar status:", e);
-      });
-
-    return () => {
-      ignore = true;
-    };
+    requestBackend({ url: "/status", method: "GET", withCredentials: true })
+      .then((r) => setSelectStatus(r.data?.content ?? []))
+      .catch(() => {});
   }, []);
 
-  // Hidrata dados de saída somente em edição
+  // 🔹 Carrega saídas do backend
   useEffect(() => {
-    if (!isEditing) return;
-    if (!orderId || !Number.isFinite(orderId)) return;
-
-    let ignore = false;
-
-    orderService
-      .findById(orderId)
-      .then((response) => {
-        if (ignore) return;
-        updateFildHandle("exitDate", response.data.exitDate);
-        updateFildHandle("status", response.data.status);
-      })
-      .catch((e) => {
-        console.error("Falha ao carregar dados (ExitData):", e);
-      });
-
-    return () => {
-      ignore = true;
-    };
+    if (!isEditing || !orderId) return;
+    exitLoad();
   }, [isEditing, orderId]);
+
+  function exitLoad() {
+    setLoading(true);
+    exitService
+      .findPageRequest(0, "", 50, "exitDate,asc", orderId ?? undefined)
+      .then((res) => {
+        const saidas: OrderExitDTO[] = res.data?.content ?? [];
+        const total = saidas.reduce((acc, s) => acc + (s.quantityProd ?? 0), 0);
+        setTotalSaidas(total);
+        updateFildHandle("totalExited", total);
+      })
+      .catch(() => {
+        setTotalSaidas(0);
+        updateFildHandle("totalExited", 0);
+      })
+      .finally(() => setLoading(false));
+  }
+
+  // 🔹 Quantidade - valida limite
+  const totalPedido = data.quantityProd ?? 0;
+  const qtdSaidaAtual = Number(data.quantityExit ?? 0);
+  const totalSaidasComAtual = totalSaidas + qtdSaidaAtual;
+  const faltaSair = Math.max(totalPedido - totalSaidasComAtual, 0);
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value ?? 0);
+    updateFildHandle("quantityExit", value);
+
+    const totalDisponivel = Math.max(totalPedido - totalSaidas, 0);
+    if (value > totalDisponivel) {
+      const msg = `A quantidade informada (${value}) excede o total disponível (${totalDisponivel}).`;
+      setLocalError(msg);
+      updateFildHandle("exitError", msg);
+    } else {
+      setLocalError(null);
+      updateFildHandle("exitError", null);
+    }
+  };
+
+  // 🔹 Data de saída - valida se é futura
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    updateFildHandle("exitDate", value);
+
+    if (value) {
+      const today = new Date();
+      const selected = new Date(value + "T00:00:00");
+
+      if (selected > today) {
+        const msg = "A data de saída não pode ser futura.";
+        setDateError(msg);
+        updateFildHandle("exitError", msg); // 🔸 envia erro global
+        return;
+      }
+    }
+
+    setDateError(null);
+    updateFildHandle("exitError", null);
+  };
 
   return (
     <div className="proj-order-step-entry-container">
@@ -82,7 +113,6 @@ export default function ExitData({
             value={data.status || null}
             placeholder="Escolha uma opção"
             isClearable
-            autoFocus
             getOptionLabel={(opt: StatusDTO) => opt.name}
             getOptionValue={(opt: StatusDTO) => String(opt.id)}
             onChange={(selected) => updateFildHandle("status", selected)}
@@ -95,12 +125,50 @@ export default function ExitData({
           <input
             type="date"
             value={data.exitDate || ""}
-            onChange={(e) => updateFildHandle("exitDate", e.target.value)}
+            onChange={handleDateChange}
             className={`proj-order-step-entry-control ${
-              errors.exitDate ? "error" : ""
+              dateError ? "error" : ""
             }`}
           />
-          {errors.exitDate && <p className="error-text">{errors.exitDate}</p>}
+          {dateError && <p className="error-text">{dateError}</p>}
+        </div>
+
+        <div>
+          <h5>Quantidade Saída</h5>
+          <input
+            type="number"
+            min={0}
+            value={data.quantityExit || ""}
+            onChange={handleQuantityChange}
+            className={`proj-order-step-entry-control ${
+              localError ? "error" : ""
+            }`}
+          />
+          {localError && <p className="error-text">{localError}</p>}
+        </div>
+      </div>
+
+      <div className="proj-exit-summary-card">
+        <div className="proj-exit-summary-header">
+          <FaBoxOpen className="proj-exit-summary-icon" />
+          <h4>Resumo da Saída</h4>
+        </div>
+
+        <div className="proj-exit-summary-body">
+          <div>
+            <span>Total Pedido</span>
+            <strong>{totalPedido}</strong>
+          </div>
+          <div>
+            <span>Total Saído</span>
+            <strong className="text-green">
+              {loading ? "..." : totalSaidasComAtual}
+            </strong>
+          </div>
+          <div>
+            <span>Falta Sair</span>
+            <strong className="text-red">{loading ? "..." : faltaSair}</strong>
+          </div>
         </div>
       </div>
     </div>

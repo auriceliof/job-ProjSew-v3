@@ -1,16 +1,25 @@
+/* ==========================
+   Estrutura base herdada
+   ========================== */
 
 .proj-order-step-entry-container h2 {
   font-size: 20px;
-  font-weight: bolder;
-  color: var(--proj-color-font-quaternary);
   font-weight: bold;
+  color: var(--proj-color-font-quaternary);
   text-align: center;
   margin-bottom: 30px;
 }
 
+.proj-order-step-entry-controls-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
 .proj-order-step-entry-controls-container h5 {
   color: var(--proj-color-font-secondary);
-  margin: 15px 0 5px 10px;
+  margin: 10px 0 5px 10px;
 }
 
 .proj-order-step-entry-control {
@@ -21,10 +30,115 @@
   color: var(--proj-color-font-primary);
   border-radius: 4px;
   border: 1px solid var(--proj-color-card-border);
+  background-color: #fff;
 }
 
-.proj-order-step-entry-error {
+.proj-order-step-entry-control:focus {
+  outline: none;
+  border-color: var(--proj-color-font-tertiary);
+  box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.1);
+}
+
+.error-text {
   color: var(--proj-color-error);
   font-size: 12px;
   padding-left: 4px;
+  margin-top: 2px;
+}
+
+/* ==========================
+   Cartão de Resumo da Saída
+   ========================== */
+
+.proj-exit-summary-card {
+  background-color: #fff8e1; /* amarelo suave */
+  border: 1px solid #ffecb3;
+  border-radius: 10px;
+  margin-top: 25px;
+  padding: 18px 22px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease-in-out;
+}
+
+.proj-exit-summary-card:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.proj-exit-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #5d4037;
+}
+
+.proj-exit-summary-icon {
+  font-size: 20px;
+  color: #f57c00;
+}
+
+.proj-exit-summary-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #5d4037;
+}
+
+.proj-exit-summary-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+  color: #4e342e;
+}
+
+.proj-exit-summary-body div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background-color: #fffdf4;
+}
+
+.proj-exit-summary-body span {
+  font-weight: 500;
+}
+
+.proj-exit-summary-body strong {
+  font-weight: 700;
+}
+
+/* ==========================
+   Cores de Destaque
+   ========================== */
+
+.text-green {
+  color: #2e7d32; /* verde */
+}
+
+.text-red {
+  color: #c62828; /* vermelho */
+}
+
+.text-blue {
+  color: #1565c0; /* azul auxiliar */
+}
+
+/* ==========================
+   Responsividade
+   ========================== */
+
+@media (max-width: 600px) {
+  .proj-order-step-entry-controls-container {
+    grid-template-columns: 1fr;
+  }
+
+  .proj-exit-summary-card {
+    padding: 15px;
+  }
+
+  .proj-exit-summary-body div {
+    font-size: 14px;
+  }
 }

@@ -76,6 +76,14 @@ export default function ConfirmationData({ data }: Props) {
               </div>
             )}
 
+            {
+              data.quantityExit &&
+              <div className="proj-order-step-confirmation-controls-content">
+                <h5>Quantidade Saída :</h5>
+                <h6>{data.quantityExit}</h6>
+              </div>
+            }
+
           </div>
         )}
       </div>
