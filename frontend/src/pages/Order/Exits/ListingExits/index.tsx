@@ -25,7 +25,7 @@ export default function ListingExits() {
   const [dialogConfirmationData, setDialogConfirmationData] = useState({
     visible: false,
     id: 0,
-    order: 0,
+    product: "",
     message: "Tem certeza que quer deletar o registro:",
   });
 
@@ -74,32 +74,33 @@ export default function ListingExits() {
     navigate(`/ListingExits/${exitId}`);
   }
 
-  function handleDelete(exitId: number, orderId: number) {
-    setDialogConfirmationData((prev) => ({
-      ...prev,
-      visible: true,
-      id: exitId,
-      order: orderId,
-    }));
-  }
+  function handleDelete(ExitId: number, productName: string) {
+        setDialogConfirmationData(
+            { 
+                ...dialogConfirmationData,
+                visible: true, 
+                id: ExitId, 
+                product: productName,
+            });
+    }    
 
   function handleDialogConfirmationAnswer(answer: boolean, exitId: number) {
     if (answer) {
-      OrderExitService.deleteRequest(exitId).then(() => {
+      OrderExitService.deleteRequest(exitId)
+      .then(() => {
         setExits([]);
         window.location.reload();
       });
     }
-    setDialogConfirmationData((prev) => ({ ...prev, visible: false }));
+    setDialogConfirmationData({ ...dialogConfirmationData, visible: false });
   }
 
-  // ✅ novo: agrupa todas as saídas do mesmo pedido
   function handleView(exit: OrderExitDTO) {
     const orderId = exit.order.id;
-    const exitsDoPedido = exits.filter((e) => e.order.id === orderId);
+    const exitsProd = exits.filter((e) => e.order.id === orderId);
     setViewExitsData({
       visible: true,
-      exits: exitsDoPedido,
+      exits: exitsProd,
       order: exit.order,
     });
   }
@@ -109,18 +110,18 @@ export default function ListingExits() {
   }
 
   return (
-    <main className="proj-pay-listing-card">
-      <section id="proj-pay-listing-section" className="proj-container">
+    <main className="proj-exits-listing-card">
+      <section id="proj-exits-listing-section" className="proj-container">
         <div className="proj-mt20">
-          <div className="proj-pay-listing-title">
+          <div className="proj-exits-listing-title">
             <h2>Histórico de Saída das Ordens</h2>
           </div>
 
-          <div className="proj-pay-listing-content">
+          <div className="proj-exits-listing-content">
             <div className="proj-mt40 proj-mb20"></div>
           </div>
 
-          <table className="proj-pay-listing-table proj-mb20 proj-mt20">
+          <table className="proj-exits-listing-table proj-mb20 proj-mt20">
             <thead>
               <tr>
                 <th>ID SAÍDA</th>
@@ -163,7 +164,7 @@ export default function ListingExits() {
                     <img
                       src={deleteIcon}
                       alt="Deletar"
-                      onClick={() => handleDelete(ex.id, ex.order.id)}
+                      onClick={() => handleDelete(ex.id, ex.order.product.name)}
                       style={{ cursor: "pointer" }}
                     />
                   </td>
@@ -172,7 +173,7 @@ export default function ListingExits() {
             </tbody>
           </table>
 
-          <div className="proj-pay-listing-pagination">
+          <div className="proj-exits-listing-pagination">
             <Pagination
               pageCount={Number(pageCounts || 0)}
               range={3}
@@ -185,6 +186,7 @@ export default function ListingExits() {
       {dialogConfirmationData.visible && (
         <DialogConfirmation
           id={dialogConfirmationData.id}
+          product={dialogConfirmationData.product}
           message={dialogConfirmationData.message}
           onDialogAnswer={handleDialogConfirmationAnswer}
         />

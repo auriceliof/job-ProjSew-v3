@@ -101,14 +101,14 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 8px 0; /* 🔸 espaçamento maior entre as linhas */
+  margin: 8px 0; 
   font-size: 0.95rem;
   color: #333;
 }
 
 .resumo p::before {
-  content: "•";              /* 🔸 marcador */
-  color: #4051b5;            /* cor do marcador */
+  content: "•";              
+  color: #4051b5;    
   font-size: 1.1rem;
   line-height: 0;
 }

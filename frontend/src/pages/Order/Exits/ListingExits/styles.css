@@ -1,31 +1,31 @@
-.proj-pay-listing-card {
+.proj-exits-listing-card {
     background: #8c00ff36;
     border-radius: 10px;
     width: 1100px;
     margin: auto;
   }
 
-.proj-pay-listing-title h2{
+.proj-exits-listing-title h2{
     display: flex;
     justify-content: center;
     padding: 30px;
     font-size: 2rem;
 }
 
-.proj-pay-listing-content {
+.proj-exits-listing-content {
     display: flex;
     justify-content: space-between;
     align-items: end;
 }
   
-.proj-pay-listing-btn {
+.proj-exits-listing-btn {
     cursor: pointer;
     margin: 5px;
     width: 18%;
     font-size: 10px;
 }  
   
-.proj-pay-listing-table {
+.proj-exits-listing-table {
     width: 100%;
     background-color: var(--proj-color-table-primary);
     border-spacing: 0;
@@ -34,68 +34,68 @@
     margin-top: 10px;
 }
 
-.proj-pay-listing-table-id {
+.proj-exits-listing-table-id {
     text-align: end;
 }
 
-.proj-pay-listing-table-amount {
+.proj-exits-listing-table-amount {
     color: var(--proj-color-font-secondary);
     font-weight: bold;
 }
 
-.proj-pay-listing-table-status {
+.proj-exits-listing-table-status {
     font-weight: bold;
 }
 
-.proj-pay-listing-table-status.red {
+.proj-exits-listing-table-status.red {
     background-color: rgba(255, 0, 0, 0.1);
     font-weight: bold;
 }
   
-.proj-pay-listing-table-status.green {
+.proj-exits-listing-table-status.green {
     background-color: rgb(0, 255, 0, 0.1);
 }
   
-.proj-pay-listing-table-status.yellow {
+.proj-exits-listing-table-status.yellow {
     background-color: rgba(246, 255, 0, 0.3);
 }
 
-.proj-pay-listing-table-status.gray {
+.proj-exits-listing-table-status.gray {
     background-color: rgba(74, 74, 72, 0.5);
 }
 
-.proj-pay-listing-table thead {
+.proj-exits-listing-table thead {
     height: 50px;
     font-size: 10px;
     color: var(--proj-color-font-quaternary);
 }
 
-.proj-pay-listing-table tbody {
+.proj-exits-listing-table tbody {
     text-align: center;
     font-size: 12px;
     color: var(--proj-color-font-primary);
     background-color: var(--proj-color-card-bg);
 }
 
-.proj-pay-listing-table tbody tr {
+.proj-exits-listing-table tbody tr {
     height: 50px;
     border-top: 1px solid var(--proj-color-card-border);
 }
 
-.proj-pay-listing-table tbody img {
+.proj-exits-listing-table tbody img {
     height: 20px;
     cursor: pointer;
     width: 35px;
 }
 
-.proj-pay-listing-icon-off {
+.proj-exits-listing-icon-off {
     cursor: auto !important;
 }
 
-.proj-pay-listing-table tr:nth-of-type(even) {
+.proj-exits-listing-table tr:nth-of-type(even) {
     background-color: var(--proj-color-table-tertiary);
 }
 
-.proj-pay-listing-pagination {
+.proj-exits-listing-pagination {
     margin: 50px 30px;
 }
