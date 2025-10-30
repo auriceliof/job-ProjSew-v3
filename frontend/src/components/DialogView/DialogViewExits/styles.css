@@ -1,0 +1,152 @@
+.proj-dialog-order-exits-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.proj-dialog-order-box {
+  background: #fff;
+  border: 2px solid #4051b5;
+  border-radius: 12px;
+  width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px 28px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  font-family: "Inter", Arial, sans-serif;
+}
+
+.proj-dialog-order-box h2 {
+  color: #0f3d0f;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.proj-dialog-order-exits-content {
+  margin: 10px 0 18px 0;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.proj-dialog-order-exits-content:last-of-type {
+  border-bottom: none;
+}
+
+.proj-dialog-order-exits-content h4 {
+  color: #4051b5;
+  margin-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.proj-dialog-order-exits-content p {
+  margin: 3px 0 0 10px;
+  color: #333;
+  font-size: 0.92rem;
+}
+
+.proj-dialog-order-exits-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f8f9ff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.proj-dialog-order-exits-table th {
+  background: #e8eaf6;
+  color: #1d1d1f;
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+}
+
+.proj-dialog-order-exits-table td {
+  border-top: 1px solid #dcdcdc;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
+.proj-dialog-order-exits-table tr:hover td {
+  background-color: #eef1ff;
+}
+
+/* --- Resumo aprimorado --- */
+.resumo {
+  background: #fff9eb;
+  border: 1px solid #e7dcc6;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-top: 10px;
+}
+
+.resumo h4 {
+  margin-bottom: 10px;
+  color: #4051b5;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.resumo p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0; /* 🔸 espaçamento maior entre as linhas */
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.resumo p::before {
+  content: "•";              /* 🔸 marcador */
+  color: #4051b5;            /* cor do marcador */
+  font-size: 1.1rem;
+  line-height: 0;
+}
+
+.resumo p strong {
+  color: #2a2a2a;
+  font-weight: 600;
+}
+
+
+.proj-dialog-order-exits-actions {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.proj-dialog-order-exits-actions button {
+  background: #4051b5;
+  color: #fff;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.proj-dialog-order-exits-actions button:hover {
+  background: #2d3c9b;
+}
+
+/* animação de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

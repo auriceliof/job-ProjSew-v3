@@ -54,9 +54,14 @@ td {
 .proj-order-listing-content {
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: center;
+    margin-top: 40px;
 }
-  
+
+.proj-order-listing-content-btn {
+    display: contents;
+}  
+
 .proj-order-listing-btn {
     cursor: pointer;
     margin: 5px;

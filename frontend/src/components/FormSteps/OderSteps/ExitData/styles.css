@@ -10,13 +10,6 @@
   margin-bottom: 30px;
 }
 
-.proj-order-step-entry-controls-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 25px;
-}
-
 .proj-order-step-entry-controls-container h5 {
   color: var(--proj-color-font-secondary);
   margin: 10px 0 5px 10px;

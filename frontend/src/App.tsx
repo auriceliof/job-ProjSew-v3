@@ -26,6 +26,7 @@ import { ToastContainer } from 'react-toastify';
 import ListingUser from './pages/User/ListingUser';
 import FormUser from './pages/User/FormUser';
 import StatsPage from './pages/Stats';
+import ListingExits from './pages/Order/Exits/ListingExits';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
             <Route path="listingOrdersPay" element={<ListingOrderPay />} />
             <Route path="listingOrdersPay/:orderPayId" element={<FormPay />} />
             <Route path="listingPay" element={<ListingPay />} />
+            <Route path="listingExists" element={<ListingExits />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Route>
 

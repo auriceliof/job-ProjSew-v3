@@ -16,6 +16,7 @@ import { OrderDTO } from "../../../models/orderDto";
 import { formatDateBR } from "../../../utils/format";
 import Filter, { OrderFilterData } from "../../../components/OrderFilter";
 import DialogViewOrder from "../../../components/DialogView/DialogViewOrder";
+import ButtonTertiary from "../../../components/ButtonTertiary";
 
 type ControlCompnentsData = {
     page: number;
@@ -104,6 +105,10 @@ export default function ListingOrder() {
         navigate("/listingOrdersPay")
     };
 
+    function handleExits() {
+        navigate("/listingExists")
+    };
+
     function handleUpdate(orderId: number) {
         navigate(`/listingOrders/${orderId}`);
     }
@@ -147,12 +152,15 @@ export default function ListingOrder() {
                     </div>
 
                     <div className="proj-order-listing-content">
-                        <div className="proj-mt40 proj-mb20">
+                        <div className="proj-order-listing-content-btn proj-mb20">
                             <div className="proj-order-listing-btn" onClick={handleNewOrder}>
                                 <ButtonPrimary name='Novo' />
                             </div>
                             <div className="proj-order-listing-btn" onClick={handlePay}>
                                 <ButtonSecondary name='Pagamento' />
+                            </div>
+                             <div className="proj-order-listing-btn" onClick={handleExits}>
+                                <ButtonTertiary name='Histórico de Saídas' />
                             </div>
                         </div>
 

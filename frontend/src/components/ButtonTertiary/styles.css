@@ -1,0 +1,18 @@
+.proj-btn-tertiary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    background-color: var(--proj-color-btn-tertiary);
+    color: var(--proj-color-font-tertiary);
+    width: 180px;
+    height: 40px;
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.proj-btn-tertiary:hover {
+    font-weight: bold;
+}
